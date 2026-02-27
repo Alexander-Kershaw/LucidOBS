@@ -1,0 +1,52 @@
+{
+  "uid": "lucidobs-patient-detail",
+  "title": "LucidOBS - Patient Detail",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "type": "query",
+        "name": "patient",
+        "label": "Patient",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": { "query": "label_values(icu_heart_rate_bpm, patient_id)" },
+        "refresh": 1,
+        "multi": false,
+        "includeAll": false
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Heart Rate (bpm)",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 7 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "refId": "A", "expr": "icu_heart_rate_bpm{patient_id=\"$patient\"}" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "SpO2 (%)",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 7 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "refId": "B", "expr": "icu_spo2_percent{patient_id=\"$patient\"}" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Respiratory Rate (breaths/min)",
+      "gridPos": { "x": 0, "y": 7, "w": 12, "h": 7 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "refId": "C", "expr": "icu_resp_rate_bpm_breaths_per_min{patient_id=\"$patient\"}" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Temperature (°C)",
+      "gridPos": { "x": 12, "y": 7, "w": 12, "h": 7 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "refId": "D", "expr": "icu_temp_c_C{patient_id=\"$patient\"}" }]
+    }
+  ]
+}

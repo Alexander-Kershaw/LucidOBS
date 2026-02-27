@@ -1,0 +1,50 @@
+{
+  "uid": "lucidobs-icu-overview",
+  "title": "LucidOBS - ICU Overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "templating": {
+    "list": [
+        {
+        "type": "query",
+        "name": "patient",
+        "label": "Patient",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": { "query": "label_values(icu_heart_rate_bpm, patient_id)" },
+        "refresh": 1,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "current": { "selected": true, "text": "All", "value": ".*" }
+        }
+    ]
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "SpO2 (%)",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "icu_spo2_percent{patient_id=~\"${patient:regex}\"}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Heart Rate (bpm)",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "B",
+          "expr": "icu_heart_rate_bpm{patient_id=~\"${patient:regex}\"}"
+        }
+      ]
+    }
+  ]
+}
