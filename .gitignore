@@ -31,6 +31,8 @@ htmlcov/
 # Type checker
 .mypy_cache/
 
+# Runtime outputs
+/runtime
 
 # Environment
 .env
