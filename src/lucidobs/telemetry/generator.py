@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 
 from lucidobs.telemetry.models import TelemetryLog
+from lucidobs.telemetry.metrics import MetricsSink, Vitals
 
 
 def _patient_ids(n: int) -> list[str]:
@@ -50,6 +51,7 @@ def run_logs(
 
     rng = random.Random(seed)
     pids = _patient_ids(patients)
+    metrics_sink = MetricsSink(otlp_endpoint="http://localhost:4318/v1/metrics")
 
     # Line-buffered append
     with out_path.open("a", encoding="utf-8") as f:
@@ -65,6 +67,21 @@ def run_logs(
                 device_id=f"dev-{pid}",
                 event="telemetry_sample",
                 **vitals,
+            )
+
+            # Latest vitals metrics to export to collector
+            metrics_sink.update(
+                patient_id=pid,
+                ward=ward,
+                device_id=f"dev-{pid}",
+                vitals=Vitals(
+                    heart_rate_bpm=log.heart_rate_bpm,
+                    spo2_pct=log.spo2_pct,
+                    resp_rate_bpm=log.resp_rate_bpm,
+                    sys_bp_mmhg=log.sys_bp_mmhg,
+                    dia_bp_mmhg=log.dia_bp_mmhg,
+                    temp_c=log.temp_c,
+                ),
             )
 
             payload = json.dumps(log.__dict__, ensure_ascii=False)
