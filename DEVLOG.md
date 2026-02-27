@@ -135,3 +135,71 @@ This demonstrates the source of truth for telemetry before ingestion into the ob
 Patient logs are streamed displaying real-time ICU telemetry logs on the Grafana dashboard.
 
 ---
+
+## OTel metrics → Prometheus → Grafana
+**TODO**
+- OpenTelemetry metrics emission for ICU vitals using ObservableGauges (latest value)
+- OTLP HTTP export from generator to the OpenTelemetry Collector
+- Prometheus scraping of collector’s Prometheus exporter endpoint continues to work
+- Grafana dashboards:
+  - ICU Overview (multiple patients)
+  - Patient Detail (single patient drill-down)
+
+**Why this design**
+- Vitals are best represented as “latest value per patient” metrics. ObservableGauges match that mental model cleanly.
+- Can reuse the existing OTLP receiver and Prometheus exporter in the collector to keep the system small.
+- Labels (`patient_id`, `ward`, `device_id`) make per-patient drill-down and filtering trivial.
+
+**Key concepts**
+- **OTLP**: protocol used to ship metrics from the generator to the collector (push).
+- **Prometheus**: pull-based, scrapes the collector endpoint and stores time-series.
+- **Labels**: dimensions that let you slice metrics per patient or ward in dashboards and alerts.
+
+**verification**
+1) `lucidobs up`
+2) `lucidobs run --patients 10 --rate 1 --seed 42`
+3) In Prometheus (Graph), queried `icu_heart_rate_bpm` and confirm series exist with `patient_id`
+4) In Grafana, open:
+   - “LucidOBS - ICU Overview”
+   - “LucidOBS - Patient Detail”
+   and confirm lines are updating.
+
+---
+
+### Screenshots
+
+#### Prometheus Metric Query: icu_heart_rate_bpm
+
+![Prometheus Metrics](assets/screenshots/prometheus_metric_query.png)
+
+Prometheus successfully scraping ICU vitals metrics from the OpenTelemetry Collector.
+
+Each time-series contains labels such as patient_id, ward, and device_id, enabling per-patient analysis.
+
+---
+
+#### ICU Overview Dashboard
+
+![ICU Overview](assets/screenshots/icu_overview_dashboard.png)
+
+Grafana dashboard displaying heart rate and SpO₂ across multiple simulated ICU patients.
+
+This provides a real-time operational overview of the ICU.
+
+---
+
+#### Patient Detail Dashboard
+
+![Patient Detail](assets/screenshots/patient_detail_dashboard.png)
+
+Grafana drill-down dashboard showing detailed vitals for a selected patient.
+
+This demonstrates the ability to isolate and investigate individual telemetry streams.
+
+---
+
+**status: COMPLETE**
+
+Telemetry and log streams operating as intended, patient overview and patient detial dashboards are running in real-time.
+
+---
