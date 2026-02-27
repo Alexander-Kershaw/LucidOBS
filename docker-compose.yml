@@ -42,6 +42,7 @@ services:
     command: ["--config=/etc/otelcol/config.yaml"]
     volumes:
       - ./configs/otel-collector.yaml:/etc/otelcol/config.yaml:ro
+      - ./runtime:/runtime
     ports:
       # OTLP gRPC + HTTP
       - "4317:4317"
