@@ -1,0 +1,27 @@
+{
+  "uid": "lucidobs-latest-events",
+  "title": "LucidOBS - Latest Events",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "panels": [
+    {
+      "type": "logs",
+      "title": "Latest ICU Telemetry Events",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 12 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "{service_name=\"lucidobs\"}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": true
+      }
+    }
+  ],
+  "time": { "from": "now-15m", "to": "now" }
+}
