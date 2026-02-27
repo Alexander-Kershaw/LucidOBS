@@ -1,3 +1,7 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
 
 # Python
 __pycache__/
@@ -32,7 +36,10 @@ htmlcov/
 .mypy_cache/
 
 # Runtime outputs
-/runtime
+runtime/
+
+# Grafana runtime artefacts
+configs/grafana/dashboards/runtime/
 
 # Environment
 .env
