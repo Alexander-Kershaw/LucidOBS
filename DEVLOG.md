@@ -72,3 +72,66 @@ The collector health endpoint confirms the OpenTelemetry Collector service is ru
 Stack boots successfully. Prometheus confirms collector scrape target healthy. Grafana datasources provisioned automatically.
 
 ---
+
+## Structured logs → Loki → Grafana
+**TODO**
+- Python telemetry generator that emits structured JSON logs (JSONL) to stdout and `runtime/logs/telemetry.jsonl`
+- OpenTelemetry Collector `filelog` receiver tails the JSONL file and exports logs to Loki
+- Grafana dashboard **“LucidOBS - Latest Events”** to view recent telemetry events
+
+**Why this design**
+- Used the OTel Collector `filelog` receiver instead of adding Promtail to keep the system smaller and easier to review.
+- Logs are written locally first (file and stdout), then ingested by the observability pipeline. This makes it local-first and makes it easy to debug by inspecting the raw log file.
+
+**Key concepts**
+- **Structured logging**: logs are JSON objects, not free-text. This makes filtering and parsing more reliable.
+- **JSONL**: one JSON object per line. It’s append-friendly and tail-friendly, favourable for logs.
+- **Loki**: log store optimized for indexing labels and scanning log content.
+- **LogQL**: Loki’s query language. Starts with `{service_name="lucidobs"}` to retrieve all LucidOBS logs.
+
+**Verification**
+1) Booted the stack: `lucidobs up`
+2) Generated logs: `lucidobs run --patients 10 --rate 1 --seed 42`
+3) Confirmed file output: `tail -n 5 runtime/logs/telemetry.jsonl`
+4) In Grafana (Explored Loki), query: `{service_name="lucidobs"}`
+5) New telemetry_sample log lines continuously appeared
+
+---
+
+### Screenshots
+
+#### Live ICU Telemetry Log Stream (Grafana Dashboard)
+
+![Latest Events Dashboard](assets/screenshots/logs_dashboard.png)
+
+Grafana dashboard displaying real-time ICU telemetry logs ingested via the OpenTelemetry Collector and stored in Loki.
+
+End-to-end log ingestion pipeline functionality is confirmed.
+
+---
+
+#### LogQL Query in Grafana Explore
+
+![Grafana Explore LogQL](assets/screenshots/logs_explore.png)
+
+Direct LogQL query `{service_name="lucidobs"}` retrieving structured telemetry events.
+
+This verifies logs are indexed and queryable independently of dashboards.
+
+---
+
+#### Raw JSONL Telemetry File
+
+![Telemetry JSONL Tail](assets/screenshots/log_file_tail.png)
+
+Local JSONL log file written by the telemetry generator.
+
+This demonstrates the source of truth for telemetry before ingestion into the observability pipeline.
+
+---
+
+**status: COMPLETE**
+
+Patient logs are streamed displaying real-time ICU telemetry logs on the Grafana dashboard.
+
+---
