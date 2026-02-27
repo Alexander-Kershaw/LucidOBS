@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from pathlib import Path
+from lucidobs.telemetry.generator import run_logs
+
 import subprocess
 import typer
 
@@ -31,6 +34,22 @@ def down(volumes: bool = False) -> None:
     if volumes:
         cmd.append("-v")
     _run(cmd)
+
+
+@app.command()
+def run(
+    patients: int = typer.Option(10, help="Number of simulated ICU patients."),
+    rate: float = typer.Option(1.0, help="Seconds between emitted samples."),
+    seed: int = typer.Option(42, help="Random seed for deterministic output."),
+    out: str = typer.Option("runtime/logs/telemetry.jsonl", help="JSONL output path."),
+) -> None:
+    
+    # Generates ICU patient telemetry logs (structured JSON) to stdout + file for Loki ingestion.
+    
+    out_path = Path(out)
+    typer.echo(f"=====|Writing logs to: {out_path}|=====")
+    typer.echo("Press Ctrl+C to stop.")
+    run_logs(patients=patients, rate_seconds=rate, seed=seed, out_path=out_path)
 
 
 if __name__ == "__main__":
