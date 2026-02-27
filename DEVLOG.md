@@ -1,7 +1,8 @@
+***
 # LucidOBS DEVLOG
-
+***
 ## Repo skeleton
-**Completions**
+**TODO**
 - Docker Compose stack: Grafana, Prometheus, Loki, OpenTelemetry Collector
 - Grafana provisioning for datasources (Prometheus + Loki)
 - Stub CLI (`lucidobs up`, `lucidobs down`)
@@ -32,6 +33,42 @@
 4) Verify collector health endpoint:
    - http://localhost:13133
 
-**Screenshots**
-- Grafana home page showing datasources present
-- Prometheus Targets page showing `otel-collector` is UP
+
+### Screenshots
+
+#### Grafana Datasources Provisioned
+
+![Grafana Datasources](assets/screenshots/grafana_datasources.png)
+
+Grafana automatically provisioned Prometheus and Loki datasources via configuration files. This confirms the visualization layer is correctly connected to both metrics and log backends without manual UI setup.
+
+---
+
+#### Prometheus Scrape Targets Healthy
+
+![Prometheus Targets](assets/screenshots/prometheus_targets.png)
+
+Prometheus successfully scrapes the OpenTelemetry Collector Prometheus exporter endpoint. This verifies:
+
+- Docker network connectivity
+- Collector exporter configuration correctness
+- Prometheus scrape configuration validity
+
+This confirms that the telemetry pipeline is structurally functional.
+
+---
+
+#### OpenTelemetry Collector Health Endpoint
+
+![Collector Health](assets/screenshots/collector_health.png)
+
+The collector health endpoint confirms the OpenTelemetry Collector service is running and accepting telemetry. This service acts as the central routing hub for all telemetry signals in LucidOBS.
+
+
+---
+
+**status: COMPLETE**
+
+Stack boots successfully. Prometheus confirms collector scrape target healthy. Grafana datasources provisioned automatically.
+
+---
