@@ -4,12 +4,29 @@ receivers:
       grpc:
       http:
 
+  filelog:
+    include:
+      - /runtime/logs/*.jsonl
+    start_at: end
+    operators:
+      - type: json_parser
+        parse_from: body
+
 processors:
+  resource:
+    attributes:
+      - action: upsert
+        key: service.name
+        value: lucidobs
+
   batch:
 
 exporters:
   prometheus:
     endpoint: "0.0.0.0:8889"
+
+  otlphttp/loki:
+    endpoint: "http://loki:3100/otlp"
 
 extensions:
   health_check:
@@ -22,3 +39,8 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [prometheus]
+
+    logs:
+      receivers: [filelog]
+      processors: [resource, batch]
+      exporters: [otlphttp/loki]
