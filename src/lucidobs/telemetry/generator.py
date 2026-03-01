@@ -7,6 +7,7 @@ from pathlib import Path
 
 from lucidobs.telemetry.models import TelemetryLog
 from lucidobs.telemetry.metrics import MetricsSink, Vitals
+from lucidobs.telemetry.scenarios import load_overrides, apply_override
 
 
 def _patient_ids(n: int) -> list[str]:
@@ -58,6 +59,10 @@ def run_logs(
         while True:
             pid = rng.choice(pids)
             vitals = _baseline_vitals(rng)
+            overrides = load_overrides() # Scenario injection
+            vitals = apply_override(pid, vitals, overrides) # 
+            scenario = vitals.pop("_scenario", None)
+
 
             log = TelemetryLog(
                 ts=TelemetryLog.now_iso(),
@@ -84,9 +89,12 @@ def run_logs(
                 ),
             )
 
-            payload = json.dumps(log.__dict__, ensure_ascii=False)
-            print(payload)          # stdout
-            f.write(payload + "\n") # file
+            record = dict(log.__dict__)
+            if scenario:
+                record["scenario"] = scenario
+            payload = json.dumps(record, ensure_ascii=False)
+            print(payload)
+            f.write(payload + "\n")
             f.flush()
 
             time.sleep(rate_seconds)
