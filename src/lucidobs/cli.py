@@ -2,12 +2,16 @@ from __future__ import annotations
 
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 
 from lucidobs.telemetry.generator import run_logs
 
 import subprocess
 import typer
 import json
+import webbrowser
+import subprocess
+import shutil
 
 app = typer.Typer(help="LucidOBS: ICU Telemetry Observability Platform")
 
@@ -16,6 +20,8 @@ def _run(cmd: list[str]) -> None:
     typer.echo(f"$ {' '.join(cmd)}")
     subprocess.run(cmd, check=True)
 
+def _dc(args: list[str]) -> int:
+    return subprocess.call(["docker", "compose", *args])
 
 @app.command()
 def up(detach: bool = True) -> None:
@@ -97,6 +103,38 @@ def inject(
 
     out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     typer.echo(f"Injected {event} for {patient} until {until_ts.isoformat()}")
+
+# Open grafana in browser
+@app.command()
+def grafana(url: str = typer.Option("http://localhost:3000", help="Grafana URL")) -> None:
+    typer.echo(f"Opening: {url}")
+    webbrowser.open(url)
+
+# Show docker compose status for the LucidOBS services
+@app.command()
+def status() -> None:
+    raise SystemExit(_dc(["ps"]))
+
+# Boot stack
+@app.command()
+def up() -> None:
+    raise SystemExit(_dc(["up", "-d"]))
+
+# Stop stack
+@app.command()
+def down() -> None:
+    raise SystemExit(_dc(["down"]))
+
+# Stop stack and wipe logs (runtime outputs) and stop containers
+@app.command()
+def reset() -> None:
+    _dc(["down", "-v"])
+    rt = Path("runtime")
+    if rt.exists():
+        shutil.rmtree(rt)
+        typer.echo("Wiped runtime/")
+    else:
+        typer.echo("runtime/ not present")
 
 
 if __name__ == "__main__":
