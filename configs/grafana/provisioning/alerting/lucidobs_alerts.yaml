@@ -1,0 +1,125 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: ICU ALERTS
+      folder: LucidOBS
+      interval: 10s
+      rules:
+        - uid: afel98716016oa
+          title: Sp02 LOW
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: prometheus
+              model:
+                editorMode: code
+                expr: min_over_time(icu_spo2_percent[2m]) < 90
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 2m
+          annotations:
+            description: ICU patient oxygen saturation below 90% for more than 2 minutes.
+            summary: SpO₂ critically low
+          labels:
+            severity: critial
+            signal: spo2
+            system: lucidobs
+          isPaused: false
+          notification_settings:
+            receiver: grafana-default-email
+        - uid: cfelafte2gz5sd
+          title: Tachycardia ALERT
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: prometheus
+              model:
+                editorMode: code
+                expr: max_over_time(icu_heart_rate_bpm[1m]) > 140
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 2m20s
+          annotations:
+            description: ICU patient heart rate has exceeded 140bpm for over 1 minute
+            summary: Tachycardia detected
+          labels:
+            severity: critial
+            signal: heart rate bpm
+            system: lucidobs
+          isPaused: false
+          notification_settings:
+            receiver: grafana-default-email
