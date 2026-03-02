@@ -1,0 +1,54 @@
+<svg width="1200" height="300" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+
+<style>
+.title {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+  font-size: 64px;
+  font-weight: 600;
+  fill: #e6edf3;
+}
+
+.subtitle {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+  font-size: 24px;
+  fill: #8b949e;
+}
+
+.wave {
+  fill: none;
+  stroke: #58a6ff;
+  stroke-width: 3;
+}
+</style>
+
+<rect width="1200" height="300" fill="#0d1117"/>
+
+<text x="60" y="140" class="title">LucidOBS</text>
+
+<text x="60" y="170" class="subtitle">
+ICU Telemetry Observability Platform
+</text>
+
+<path class="wave"
+d="
+M 60 230
+L 120 230
+L 140 190
+L 160 260
+L 180 180
+L 200 230
+L 400 230
+L 420 210
+L 440 240
+L 460 200
+L 480 230
+L 700 230
+L 720 195
+L 740 260
+L 760 180
+L 780 230
+L 1100 230
+"
+/>
+
+</svg>
