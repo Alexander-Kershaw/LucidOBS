@@ -8,6 +8,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.egg-info/
+src/*.egg-info/
+**/*.egg-info/
+
 *.so
 *.dylib
 
