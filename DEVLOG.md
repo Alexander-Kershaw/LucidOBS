@@ -203,3 +203,105 @@ This demonstrates the ability to isolate and investigate individual telemetry st
 Telemetry and log streams operating as intended, patient overview and patient detial dashboards are running in real-time.
 
 ---
+
+## Alerts and deterministic injection
+**TODOt**
+- Deterministic scenario injection via `lucidobs inject` writing `runtime/scenarios/overrides.json`
+- Generator reads overrides and forces vitals for a specified patient and duration
+- Logs annotate injected scenarios for auditing (`scenario` field)
+- Grafana alert rules for:
+  - low SpO₂
+  - tachycardia
+
+**Why this design**
+- Alert demos must be reproducible. Random anomalies are unreliable for demo purposes and verification of alerts firing correctly.
+- File-based overrides keep the system local-first and easy to debug.
+- Alerts are defined on metrics (Prometheus), while logs provide narrative context for why an alert triggered.
+
+**Key concepts**
+- **Alert rules**: PromQL expressions evaluated on a schedule; fire when conditions persist for a duration.
+- **Windows (over_time)**: min/max over a range smooths out noise and makes rules robust.
+- **Deterministic injection**: controlled inputs to reliably demonstrate alert behaviour.
+
+**Verificationy**
+1) Started stack: `lucidobs up`
+2) Started generator: `lucidobs run --patients 10 --rate 1 --seed 42`
+3) Injected scenario: `lucidobs inject --event spo2_drop --patient P003 --duration 180`
+4) Confirmed alert fires in Grafana Alerting within ~2–3 minutes.
+5) Confirmed log annotation exists in Loki via LogQL search for `scenario`.
+
+---
+
+### Screenshots
+
+#### SpO2 Alert
+
+![spo2_alert](assets/screenshots/spo2_alert.png)
+
+
+---
+
+#### Tachycardia Alert
+
+![tachycardia_alert](assets/screenshots/tachycardia_alert.png)
+
+
+---
+
+#### Confirm Log of Injected Scenario
+
+![log_scenario](assets/screenshots/alert_log.png)
+
+---
+
+**status: COMPLETE**
+
+Deterministic scenario injection successful and alerts traverse pending to firing as intended.
+
+---
+
+# Final Reflection
+
+LucidOBS began as a simple telemetry generator and has evolved into a complete observability system.
+
+It now demonstrates:
+
+- structured log ingestion  
+- time-series metrics monitoring  
+- alert-driven incident detection  
+- deterministic failure simulation  
+- reproducible infrastructure  
+
+The project highlights a key engineering principle:
+
+- Observability is not visualisation.
+
+- Observability is the ability to understand system state through telemetry.
+
+LucidOBS provides that capability end-to-end.
+
+---
+
+# What I Learned
+
+- OpenTelemetry architecture and telemetry pipelines
+
+- Prometheus time-series monitoring
+
+- Grafana alerting and dashboards
+
+- Log ingestion and indexing via Loki
+
+- Operational tooling and reproducible environments
+
+---
+
+# Definition of Done — Complete
+
+LucidOBS successfully meets all original project goals.
+
+It is fully reproducible, observable, and operational.
+
+**Development complete.**
+
+---
