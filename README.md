@@ -138,6 +138,54 @@ flowchart LR
 
 ---
 
+## Operational Workflow
+
+LucidOBS demonstrates the typical observability workflow used during incident response.
+
+1. **Telemetry generation**
+
+ICU patient vitals are emitted as both:
+
+- structured logs (JSONL)
+- time-series metrics (OpenTelemetry)
+
+2. **Telemetry ingestion**
+
+The OpenTelemetry Collector routes telemetry:
+
+- logs → Loki  
+- metrics → Prometheus  
+
+3. **Monitoring**
+
+Grafana dashboards provide:
+
+- ICU overview monitoring
+- patient-level telemetry inspection
+- live log streams
+
+4. **Alert detection**
+
+Alert rules detect abnormal conditions such as:
+
+- SpO₂ < 90%
+- heart rate > 140 bpm
+
+5. **Incident investigation**
+
+When alerts fire:
+
+- engineers inspect metrics in Grafana
+- logs are queried using LogQL
+- affected patients and time ranges are identified
+
+6. **Root cause investigation**
+
+Patient drill-down dashboards and log streams enable engineers to trace abnormal telemetry patterns and determine system behaviour during the incident.
+
+This workflow mirrors authentic observability practices used in cloud infrastructure, distributed systems monitoring, and healthcare telemetry environments.
+
+---
 
 ### Logs
 
